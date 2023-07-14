@@ -16,7 +16,9 @@ interface CoinProp{
     formatedMarket: string,
     formatedLowPrice: string,
     formatedHighPrice: string,
+    numberDelta: number,
     error?: string,
+    
 }
 
 
@@ -29,6 +31,7 @@ export function Detail(){
 
     useEffect (()=>{
         function getData(){
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             fetch(`https://sujeitoprogramador.com/api-cripto/coin/?key=049b978a777a4ee7&symbol=${cripto}&pref=BRL`)
             .then((res)=>{
                 res.json()
@@ -48,6 +51,7 @@ export function Detail(){
                         formatedMarket :price.format(Number(data.market_cap)),
                         formatedLowPrice :price.format(Number(data.low_24h)),
                         formatedHighPrice :price.format(Number(data.high_24h)),
+                        numberDelta: parseFloat(data.delta_24h.replace(',', '.'))
 
                     }
 
@@ -91,7 +95,7 @@ export function Detail(){
                     <strong>Mínima 24h:</strong> {detail?.formatedLowPrice}
                 </p>
                 <p>
-                    <strong>Delta 24h:</strong> <span className={Number(detail?.delta_24h) >= 0 ? styles.profit : styles.loss}>{detail?.delta_24h}</span>
+                    <strong>Delta 24h:</strong> <span className={detail?.numberDelta && detail?.numberDelta >= 0 ? styles.profit : styles.loss}>{detail?.delta_24h}</span>
                 </p>
                 <p>
                     <strong>Valor Mercado:</strong> {detail?.formatedMarket}
