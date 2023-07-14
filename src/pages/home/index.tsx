@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import styles from './home.module.css'
 import {BiSearch} from 'react-icons/bi'
-import { Link } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { FormEvent, useEffect, useState } from 'react'
 
 // https://coinlib.io/api/v1/coinlist?key=049b978a777a4ee7&pref=BTC&page=1&order=volume_desc
 
@@ -24,6 +24,10 @@ interface DataProps{
 
 export function Home(){
     const [coins, setCoins] = useState<CoinProps[]>([])
+
+    const [inputValue, setInputValue] = useState("")
+
+    const navigate = useNavigate()
 
     useEffect(()=>{
         function getData() {
@@ -65,12 +69,22 @@ export function Home(){
         getData();
     }, [])
 
+    function handleSearch(e: FormEvent){
+        e.preventDefault();
+        if(inputValue === ""){
+            return
+        }
+        navigate(`/detail/${inputValue}`)
+    }
+
     return(
         <main className={styles.conteiner}>
-            <form className={styles.form}>
+            <form className={styles.form} onSubmit={handleSearch}>
                 <input 
                 type="text"
-                placeholder='Digite o simbolo da moeba: BTC' />
+                placeholder='Digite o simbolo da moeba: BTC'
+                value={inputValue}
+                onChange={(e)=> setInputValue(e.target.value)} />
 
                 <button type='submit'>
                     <BiSearch size={30} color="#fff"/>
@@ -99,7 +113,7 @@ export function Home(){
                         <td className={styles.tdLabel} data-label="Preço">
                             {coin.formatedPrice}
                         </td>
-                        <td className={Number(coin.delta_24h) <= 0 ? styles.tdLoss : styles.tdProfit} data-label="Volume">
+                        <td className={Number(coin.delta_24h) >= 0 ? styles.tdProfit : styles.tdLoss} data-label="Volume">
                             <span>{coin.delta_24h}</span>
                         </td>
                     </tr>
